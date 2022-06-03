@@ -2,3 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
+DATA/Annual_VarFields/*
+DATA/SISAL1k_monthly*

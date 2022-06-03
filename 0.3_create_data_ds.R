@@ -10,9 +10,9 @@ source("Functions/SubsampleTimeseriesBlock_highresNA.R")
 
 for(MODEL in c("iHadCM3", "ECHAM5-wiso", "GISS-E2-R", "iCESM", "isoGSM")){
   print(MODEL)
-  ANNUAL <- read.csv(paste0("Data/SISAL1k_annual_",MODEL,".csv"))
-  ENTITY_INFO <- read.csv("Data/SISAL1k_entity_info.csv")
-  DATA_SPELEO <- read.csv("Data/SISAL1k_recordData.csv")
+  ANNUAL <- read.csv(paste0("DATA/SISAL1k_annual_",MODEL,".csv"))
+  ENTITY_INFO <- read.csv("DATA/SISAL1k_entity_info.csv")
+  DATA_SPELEO <- read.csv("DATA/SISAL1k_recordData.csv")
   DATA_SPELEO$mineralogy = as.character(DATA_SPELEO$mineralogy)
     
   for(entity in ENTITY_INFO$entity_id){
@@ -67,11 +67,11 @@ for(MODEL in c("iHadCM3", "ECHAM5-wiso", "GISS-E2-R", "iCESM", "isoGSM")){
     colnames(data_new) = c("site_id", "entity_id", "year_BP", "mineralogy", 
                            "d18O_measurement", "d13C_measurement", "d18O_dweq","d13C_dweq",
                            "TEMP", "PREC", "ISOT", "ITIF","EVAP")
-    if(entity == 14){data = data_new}
+    if(entity == ENTITY_INFO$entity_id[1]){data = data_new}
     else{data = rbind(data, data_new)}
     
   }
-  write.csv(data, file = paste0("Data/SISAL1k_ds_",MODEL,".csv"), row.names = F)
+  write.csv(data, file = paste0("DATA/SISAL1k_ds_",MODEL,".csv"), row.names = F)
 
 
 }

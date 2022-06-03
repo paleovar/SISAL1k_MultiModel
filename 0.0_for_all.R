@@ -1,3 +1,5 @@
+#This is the data_path where the raw simulation nc files are stored
+data_path = "example_path" #<- insert your path. Download of simulation data available here: Zenodo
 
 for(Model in c("iHadCM3", "ECHAM5-wiso", "GISS-E2-R", "iCESM", "isoGSM")){
   source("1_create_data_speleo_monthly.R")

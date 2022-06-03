@@ -27,18 +27,18 @@ source("Functions/clear_data_matrix.R")
 source("Functions/monthly_mean.R")
 
 if(Model == "iHadCM3"){
-  ncf <- ncdf4::nc_open("DATA/Sim_data/iHadCM3_tsurf_850-1849.nc")
+  ncf <- ncdf4::nc_open(paste0(data_path, "iHadCM3_tsurf_850-1849.nc"))
   DATA_past1000$MODEL$TEMP <- clear_data_matrix_neighbour(ncdf4::ncvar_get(ncf),"TEMP")-273.15
   DATA_past1000$MODEL$lon <- ncdf4::ncvar_get(ncf, 'longitude')
   DATA_past1000$MODEL$lat <- ncdf4::ncvar_get(ncf, 'latitude')
   ncdf4::nc_close(ncf)
-  ncf <- ncdf4::nc_open("DATA/Sim_data/iHadCM3_prec_850-1849.nc")
+  ncf <- ncdf4::nc_open(paste0(data_path, "iHadCM3_prec_850-1849.nc"))
   DATA_past1000$MODEL$PREC <- clear_data_matrix_neighbour(ncdf4::ncvar_get(ncf),"PREC")*12
   ncdf4::nc_close(ncf)
-  ncf <- ncdf4::nc_open("DATA/Sim_data/iHadCM3_d18O_850-1849.nc")
+  ncf <- ncdf4::nc_open(paste0(data_path,"iHadCM3_d18O_850-1849.nc"))
   DATA_past1000$MODEL$ISOT <- clear_data_matrix_neighbour(ncdf4::ncvar_get(ncf),"ISOT")
   ncdf4::nc_close(ncf)
-  ncf <- ncdf4::nc_open("DATA/Sim_data/iHadCM3_lath_850-1849.nc")
+  ncf <- ncdf4::nc_open(paste0(data_path, "iHadCM3_lath_850-1849.nc"))
   DATA_past1000$MODEL$LATH <- ncdf4::ncvar_get(ncf)
   ncdf4::nc_close(ncf)
   
@@ -50,15 +50,16 @@ if(Model == "iHadCM3"){
         if(is.na(DATA_past1000$MODEL$TEMP[lon,lat,time])){
           DATA_past1000$MODEL$EVAP[lon,lat,time] = NA
         }else if(DATA_past1000$MODEL$TEMP[lon,lat,time]<0){
-          DATA_past1000$MODEL$EVAP[lon,lat,time] = DATA_past1000$MODEL$LATH[lon,lat,time]/(2257000+4200*(100-DATA_past1000$MODEL$TEMP[lon,lat,time])+333500)*12
+          DATA_past1000$MODEL$EVAP[lon,lat,time] = DATA_past1000$MODEL$LATH[lon,lat,time]/(2257000+4200*(100-DATA_past1000$MODEL$TEMP[lon,lat,time])+333500)*86400*360
         }else{
-          DATA_past1000$MODEL$EVAP[lon,lat,time] = DATA_past1000$MODEL$LATH[lon,lat,time]/(2257000+4200*(100-DATA_past1000$MODEL$TEMP[lon,lat,time]))*12
+          DATA_past1000$MODEL$EVAP[lon,lat,time] = DATA_past1000$MODEL$LATH[lon,lat,time]/(2257000+4200*(100-DATA_past1000$MODEL$TEMP[lon,lat,time]))*86400*360
         }
       }
     }
   }
   
-  for(VAR in c("TEMP", "PREC", "ISOT", "EVAP")){
+  #for(VAR in c("TEMP", "PREC", "ISOT", "EVAP")){
+  for(VAR in c("PREC", "ISOT", "EVAP")){
     ANNUAL = array(dim = c(dim(DATA_past1000$MODEL[[VAR]])[c(1,2)], floor(dim(DATA_past1000$MODEL[[VAR]])[3]/12)))
     
     if(VAR == "ISOT"){
@@ -88,18 +89,18 @@ if(Model == "iHadCM3"){
   
   
 }else if(Model == "ECHAM5-wiso"){
-  ncf <- ncdf4::nc_open("DATA/Sim_data/ECHAM5-wiso_tsurf_850-1849.nc")
+  ncf <- ncdf4::nc_open(paste0(data_path, "ECHAM5-wiso_tsurf_850-1849.nc"))
   DATA_past1000$MODEL$TEMP <- clear_data_matrix_neighbour(ncdf4::ncvar_get(ncf)-273.15, "TEMP")
   DATA_past1000$MODEL$lon <- ncdf4::ncvar_get(ncf, 'lon')
   DATA_past1000$MODEL$lat <- ncdf4::ncvar_get(ncf, 'lat')
   ncdf4::nc_close(ncf)
-  ncf <- ncdf4::nc_open("DATA/Sim_data/ECHAM5-wiso_prec_850-1849.nc")
+  ncf <- ncdf4::nc_open(paste0(data_path, "ECHAM5-wiso_prec_850-1849.nc"))
   DATA_past1000$MODEL$PREC <- clear_data_matrix_neighbour(ncdf4::ncvar_get(ncf)*12, "PREC")
   ncdf4::nc_close(ncf)
-  ncf <- ncdf4::nc_open("DATA/Sim_data/ECHAM5-wiso_d18O_850-1849.nc")
+  ncf <- ncdf4::nc_open(paste0(data_path, "ECHAM5-wiso_d18O_850-1849.nc"))
   DATA_past1000$MODEL$ISOT <- clear_data_matrix_neighbour(ncdf4::ncvar_get(ncf), "ISOT")
   ncdf4::nc_close(ncf)
-  ncf <- ncdf4::nc_open("DATA/Sim_data/ECHAM5-wiso_evap_850-1849.nc")
+  ncf <- ncdf4::nc_open(paste0(data_path, "ECHAM5-wiso_evap_850-1849.nc"))
   DATA_past1000$MODEL$EVAP <- ncdf4::ncvar_get(ncf)*12
   ncdf4::nc_close(ncf)
   
@@ -134,18 +135,18 @@ if(Model == "iHadCM3"){
   
 }else if(Model == "GISS-E2-R"){
   library(abind)
-  ncf <- ncdf4::nc_open("DATA/Sim_data/GISS-E2-R_tsurf_850-1849.nc")
+  ncf <- ncdf4::nc_open(paste0(data_path, "GISS-E2-R_tsurf_850-1849.nc"))
   DATA_past1000$MODEL$TEMP <- clear_data_matrix_neighbour(abind(ncdf4::ncvar_get(ncf)[73:144,90:1,],ncdf4::ncvar_get(ncf)[1:72,90:1,], along = 1)-273.15, "TEMP")
   DATA_past1000$MODEL$lon <- ncdf4::ncvar_get(ncf, 'lon')+180
   DATA_past1000$MODEL$lat <- ncdf4::ncvar_get(ncf, 'lat')[90:1]
   ncdf4::nc_close(ncf)
-  ncf <- ncdf4::nc_open("DATA/Sim_data/GISS-E2-R_prec_850-1849.nc")
+  ncf <- ncdf4::nc_open(paste0(data_path, "GISS-E2-R_prec_850-1849.nc"))
   DATA_past1000$MODEL$PREC <- clear_data_matrix_neighbour(abind(ncdf4::ncvar_get(ncf)[73:144,90:1,],ncdf4::ncvar_get(ncf)[1:72,90:1,], along = 1)*12, "PREC")
   ncdf4::nc_close(ncf)
-  ncf <- ncdf4::nc_open("DATA/Sim_data/GISS-E2-R_d18O_850-1849.nc")
+  ncf <- ncdf4::nc_open(paste0(data_path, "GISS-E2-R_d18O_850-1849.nc"))
   DATA_past1000$MODEL$ISOT <- clear_data_matrix_neighbour(abind(ncdf4::ncvar_get(ncf)[73:144,90:1,],ncdf4::ncvar_get(ncf)[1:72,90:1,], along = 1), "ISOT")
   ncdf4::nc_close(ncf)
-  ncf <- ncdf4::nc_open("DATA/Sim_data/GISS-E2-R_evap_850-1849.nc")
+  ncf <- ncdf4::nc_open(paste0(data_path, "GISS-E2-R_evap_850-1849.nc"))
   DATA_past1000$MODEL$EVAP <- clear_data_matrix_neighbour(abind(ncdf4::ncvar_get(ncf)[73:144,90:1,],ncdf4::ncvar_get(ncf)[1:72,90:1,], along = 1)*12, "PREC")
   ncdf4::nc_close(ncf)
   
@@ -179,18 +180,18 @@ if(Model == "iHadCM3"){
   }
   
 }else if(Model == "iCESM"){
-  ncf <- ncdf4::nc_open("DATA/Sim_data/iCESM_tsurf_850-1849.nc")
+  ncf <- ncdf4::nc_open(paste0(data_path, "iCESM_tsurf_850-1849.nc"))
   DATA_past1000$MODEL$TEMP <- clear_data_matrix_neighbour(ncdf4::ncvar_get(ncf)[,96:1,1:12000]-273.15, "TEMP")
   DATA_past1000$MODEL$lon <- ncdf4::ncvar_get(ncf, 'lon')
   DATA_past1000$MODEL$lat <- ncdf4::ncvar_get(ncf, 'lat')[94:1]
   ncdf4::nc_close(ncf)
-  ncf <- ncdf4::nc_open("DATA/Sim_data/iCESM_prec_850-1849.nc")
+  ncf <- ncdf4::nc_open(paste0(data_path, "iCESM_prec_850-1849.nc"))
   DATA_past1000$MODEL$PREC <- clear_data_matrix_neighbour(ncdf4::ncvar_get(ncf)[,96:1,1:12000]*12, "PREC")
   ncdf4::nc_close(ncf)
-  ncf <- ncdf4::nc_open("DATA/Sim_data/iCESM_d18O_850-1849.nc")
+  ncf <- ncdf4::nc_open(paste0(data_path, "iCESM_d18O_850-1849.nc"))
   DATA_past1000$MODEL$ISOT <- clear_data_matrix_neighbour(ncdf4::ncvar_get(ncf)[,96:1,1:12000], "ISOT")
   ncdf4::nc_close(ncf)
-  ncf <- ncdf4::nc_open("DATA/Sim_data/iCESM_lath_850-1849.nc")
+  ncf <- ncdf4::nc_open(paste0(data_path, "iCESM_lath_850-1849.nc"))
   DATA_past1000$MODEL$LATH <- ncdf4::ncvar_get(ncf)
   ncdf4::nc_close(ncf)
   
@@ -202,9 +203,9 @@ if(Model == "iHadCM3"){
         if(is.na(DATA_past1000$MODEL$TEMP[lon,lat,time])){
           DATA_past1000$MODEL$EVAP[lon,lat,time] = NA
         }else if(DATA_past1000$MODEL$TEMP[lon,lat,time]<0){
-          DATA_past1000$MODEL$EVAP[lon,lat,time] = DATA_past1000$MODEL$LATH[lon,lat,time]/(2257000+4200*(100-DATA_past1000$MODEL$TEMP[lon,lat,time])+333500)*12
+          DATA_past1000$MODEL$EVAP[lon,lat,time] = DATA_past1000$MODEL$LATH[lon,lat,time]/(2257000+4200*(100-DATA_past1000$MODEL$TEMP[lon,lat,time])+333500)*86400*365.25
         }else{
-          DATA_past1000$MODEL$EVAP[lon,lat,time] = DATA_past1000$MODEL$LATH[lon,lat,time]/(2257000+4200*(100-DATA_past1000$MODEL$TEMP[lon,lat,time]))*12
+          DATA_past1000$MODEL$EVAP[lon,lat,time] = DATA_past1000$MODEL$LATH[lon,lat,time]/(2257000+4200*(100-DATA_past1000$MODEL$TEMP[lon,lat,time]))*86400*365.25
         }
       }
     }
@@ -241,19 +242,19 @@ if(Model == "iHadCM3"){
   }
   
 }else if(Model == "isoGSM"){
-  ncf <- ncdf4::nc_open("DATA/Sim_data/isoGSM_tsurf_850-1849.nc")
+  ncf <- ncdf4::nc_open(paste0(data_path, "isoGSM_tsurf_850-1849.nc"))
   DATA_past1000$MODEL$TEMP <- clear_data_matrix_neighbour(ncdf4::ncvar_get(ncf)[,94:1,]-273.15, "TEMP")
   DATA_past1000$MODEL$lon <- ncdf4::ncvar_get(ncf, 'longitude')
   DATA_past1000$MODEL$lat <- ncdf4::ncvar_get(ncf, 'latitude')[94:1]
   ncdf4::nc_close(ncf)
-  ncf <- ncdf4::nc_open("DATA/Sim_data/isoGSM_prec_850-1849.nc")
+  ncf <- ncdf4::nc_open(paste0(data_path, "isoGSM_prec_850-1849.nc"))
   DATA_past1000$MODEL$PREC <- clear_data_matrix_neighbour(ncdf4::ncvar_get(ncf)[,94:1,]*86400*360, "PREC")
   ncdf4::nc_close(ncf)
-  ncf <- ncdf4::nc_open("DATA/Sim_data/isoGSM_d18O_850-1849.nc")
+  ncf <- ncdf4::nc_open(paste0(data_path, "isoGSM_d18O_850-1849.nc"))
   DATA_past1000$MODEL$ISOT <- clear_data_matrix_neighbour(ncdf4::ncvar_get(ncf)[,94:1,], "ISOT")
   ncdf4::nc_close(ncf)
   DATA_past1000$MODEL$ISOT[DATA_past1000$MODEL$PREC < 0.5] = NA
-  ncf <- ncdf4::nc_open("DATA/Sim_data/isoGSM_lath_850-1849.nc")
+  ncf <- ncdf4::nc_open(paste0(data_path, "isoGSM_lath_850-1849.nc"))
   DATA_past1000$MODEL$LATH <- ncdf4::ncvar_get(ncf)[,94:1,]
   ncdf4::nc_close(ncf)
   
@@ -266,9 +267,9 @@ if(Model == "iHadCM3"){
         if(is.na(DATA_past1000$MODEL$TEMP[lon,lat,time])){
           DATA_past1000$MODEL$EVAP[lon,lat,time] = NA
         }else if(DATA_past1000$MODEL$TEMP[lon,lat,time]<0){
-          DATA_past1000$MODEL$EVAP[lon,lat,time] = DATA_past1000$MODEL$LATH[lon,lat,time]/(2257000+4200*(100-DATA_past1000$MODEL$TEMP[lon,lat,time])+333500)*12
+          DATA_past1000$MODEL$EVAP[lon,lat,time] = DATA_past1000$MODEL$LATH[lon,lat,time]/(2257000+4200*(100-DATA_past1000$MODEL$TEMP[lon,lat,time])+333500)*86400*360
         }else{
-          DATA_past1000$MODEL$EVAP[lon,lat,time] = DATA_past1000$MODEL$LATH[lon,lat,time]/(2257000+4200*(100-DATA_past1000$MODEL$TEMP[lon,lat,time]))*12
+          DATA_past1000$MODEL$EVAP[lon,lat,time] = DATA_past1000$MODEL$LATH[lon,lat,time]/(2257000+4200*(100-DATA_past1000$MODEL$TEMP[lon,lat,time]))*86400*360
         }
       }
     }
@@ -331,7 +332,7 @@ if(Model == "iHadCM3"){
   
 }
 
-remove(data, site, ii, name, load_sisal_data)
+remove(data, site, ii, name)
 
 
 #################################################
@@ -341,7 +342,6 @@ remove(data, site, ii, name, load_sisal_data)
 print("...DATA extract")
 source("Functions/extract_gridboxes_v2.R")
 
-#for(Model in c("iHadCM3", "ECHAM5-wiso", "isoGSM", "iCESM", "GISS-E2-R")){
 for (ii in 1:(length(DATA_past1000$CAVES$entity_info$entity_id))){
   lon_cave = DATA_past1000$CAVES$entity_info$longitude[ii]
   
@@ -407,7 +407,7 @@ for(entity in sort(DATA_past1000$CAVES$entity_info$entity_id)){
   colnames(data_new) = c("site_id", "entity_id", "year_BP", "TEMP", "PREC", "ISOT", "EVAP")
   
   
-  if(entity == 14){data = data_new}
+  if(entity == sort(DATA_past1000$CAVES$entity_info$entity_id)[1]){data = data_new}
   else{data = rbind(data, data_new)}
   
 }

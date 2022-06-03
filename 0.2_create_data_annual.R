@@ -9,8 +9,8 @@ source("Functions/monthly_mean.R")
 
 for(MODEL in c("iHadCM3", "ECHAM5-wiso", "GISS-E2-R", "iCESM", "isoGSM")){
   print(MODEL)
-  ENTITY_INFO <- read.csv("Data/SISAL1k_entity_info.csv")
-  MONTHLY <- read.csv(paste0("Data/SISAL1k_monthly_",MODEL,".csv"))
+  ENTITY_INFO <- read.csv("DATA/SISAL1k_entity_info.csv")
+  MONTHLY <- read.csv(paste0("DATA/SISAL1k_monthly_",MODEL,".csv"))
     
   for(entity in ENTITY_INFO$entity_id){
     data_rec <- MONTHLY %>% filter(entity_id == entity)
@@ -26,11 +26,11 @@ for(MODEL in c("iHadCM3", "ECHAM5-wiso", "GISS-E2-R", "iCESM", "isoGSM")){
     data_new[,7] = inf_weighting(data_rec$ISOT, data_rec$PREC, data_rec$EVAP)
     data_new[,8] = monthlymean(data_rec$EVAP)
     colnames(data_new) = c("site_id", "entity_id", "year_BP", 
-                           "TEMP", "PREC","ISOT", "ITIF","EVAP")
-    if(entity == 14){data = data_new}
+                           "TEMP", "PREC","ISOT","ITIF","EVAP")
+    if(entity == ENTITY_INFO$entity_id[1]){data = data_new}
     else{data = rbind(data, data_new)}
     
   }
-  write.csv(data, file = paste0("Data/SISAL1k_annual_",MODEL,".csv"), row.names = F)
+  write.csv(data, file = paste0("DATA/SISAL1k_annual_",MODEL,".csv"), row.names = F)
   
 }
